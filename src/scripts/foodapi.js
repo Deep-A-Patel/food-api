@@ -1,7 +1,12 @@
 console.log("foodapi ROCKS");
 
 foodFactory = (foodItem) => {
-    return `<h2>${foodItem.name}</h2>`
+    return `
+    <div class="foodItem">
+    <h2>${foodItem.name}</h2>
+    <P>${foodItem.category}<P>
+    <P>${foodItem.ethnicity}<P>
+    `
 }
 
 addFoodToDom = (foodAsHTML) => {

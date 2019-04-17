@@ -1,41 +1,43 @@
-console.log("foodapi ROCKS");
+// create function to get all food data (local and api) and input into DOM
 
-foodFactory = (foodItem) => {
+function getData() {
+    //grab HTML to inject food data
+    let foodlist = document.querySelector(".foodList");
+    // clear element
+    foodlist.innerHTML = "";
+    // fetch LOCAL food data
+    fetch("http://localhost:8088/food")
+    .then (response => response.json())
+    .then(parsedFoods => {
+        //console.table shows data in console as a table
+        console.table(parsedFoods);
+        // loop over local food data, grab barcode and use it to fetch API data
+        parsedFoods.forEach(item => {
+            fetch(`http://world.openfoodfacts.org/api/v0/product/${item.barcode}.json`)
+            .then(APIfoods => APIfoods.json())
+            .then(parsedAPIfoods => {
+                //target html element and inject DOM element created by foodFactory function
+                // In below, item is from local API, parsedAPI foods is from online
+                foodlist.innerHTML += foodFactory(item, parsedAPIfoods);
+            });
+        });
+    });
+}
+
+// input local and API food data to create DOM element
+function foodFactory(localFood, apiFood) {
     return `
-    <div class="foodItem">
-    <h2>${foodItem.name}</h2>
-    <P>${foodItem.category}<P>
-    <P>${foodItem.ethnicity}<P>
-    `
+    <div class="Item">
+        <h2>${localFood.name}</h2>
+        <h3>${localFood.ethnicity}</h3>
+        <p>${localFood.category}</p>
+        <p>Country: ${apiFood.product.countries}</p>
+        <p>Calories: ${apiFood.product.nutriments.energy_serving}</p>
+        <p>Fat: ${apiFood.product.nutriments.fat_serving}</p>
+        <p class="ingredients">Ingredients: ${apiFood.product.ingredients_text}</p>
+    </div>
+    `;
 }
 
-addFoodToDom = (foodAsHTML) => {
-    el.innerHTML += foodAsHTML;
-}
-
-function getData(resource){
-    el.innerHTML = "";
-
-    fetch(`http://localhost:8088/${resource}`)
-        .then(foodResult => {
-            console.log(foodResult)
-            return foodResult
-        })
-        .then(foods => foods.json())
-        .then(parsedFoods => {
-            parsedFoods.forEach(food => {
-                const foodAsHTML = foodFactory(food);
-                addFoodToDom(foodAsHTML);
-            })
-        })
-}
-
-const el = document.querySelector("#container");
-const getDataButton = document.getElementById("btn-getData");
-getDataButton.addEventListener("click", () =>  getData("drinks"));
-
-//the following does not work as expected. function is invoked immediately
-// getDataButton.addEventListener("click", getData("drinks"));
-
-const getDataButton2 = document.getElementById("btn-getData2");
-getDataButton2.addEventListener("click", () => getData("food"));
+const getDataBtn = document.getElementById("btn-get-data");
+getDataBtn.addEventListener("click", () => getData());

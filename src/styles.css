@@ -1,10 +1,23 @@
-.foodlist {
+.foodList {
     display: flex;
     flex-direction: row;
 }
 
-.foodItem {
+.Item {
     padding: 10px;
-    border: 1px solid black;
+    border: 1px solid maroon;
     margin: 5px;
+}
+
+body {
+    background-color: lightgray;
+}
+
+button {
+    color:white;
+    background-color:maroon;
+}
+
+h1 {
+    color: maroon;
 }
